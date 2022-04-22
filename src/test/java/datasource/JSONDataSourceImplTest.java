@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,10 @@ class JSONDataSourceImplTest {
     private JSONDataSourceImpl jsonDataSource;
     private JSONConverter jsonConverter;
 
-    private static final String baseDirectory = "D:\\Desktop\\Coding\\Java Projects\\CLIApp\\src\\test\\java\\datasource\\";
+    private static final String baseDirectory
+            = Path.of(Paths.get("").toAbsolutePath().toString(),
+            "src", "test", "java", "datasource")
+            .toString();
     private static final String filePath = "personal-info.json";
 
     @BeforeEach
