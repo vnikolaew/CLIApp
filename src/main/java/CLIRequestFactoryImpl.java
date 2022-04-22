@@ -27,6 +27,7 @@ public class CLIRequestFactoryImpl implements CLIRequestFactory {
         requestMap.put("create", CreateCommand.class);
         requestMap.put("delete", DeleteCommand.class);
         requestMap.put("exit", ExitCommand.class);
+        requestMap.put("help", HelpCommand.class);
         requestMap.put("validate", ValidateSchemaCommand.class);
     }
 
@@ -51,10 +52,13 @@ public class CLIRequestFactoryImpl implements CLIRequestFactory {
             if(requestType.equals(ExitCommand.class)) {
                 return new ExitCommand();
             }
+            if(requestType.equals(HelpCommand.class)) {
+                return new HelpCommand();
+            }
 
             return (CLIRequest) requestType
-                    .getConstructors()[0]
-                    .newInstance(dataSource, arguments);
+                            .getConstructors()[0]
+                            .newInstance(dataSource, arguments);
         } catch (Exception e) {
             return new InvalidCommand();
         }

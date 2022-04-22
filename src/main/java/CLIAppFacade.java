@@ -4,8 +4,13 @@ import datasource.conversions.JSONConverterImpl;
 import io.*;
 
 public class CLIAppFacade {
-    public void run() {
 
+    public void run() {
+        var app = buildApp();
+        app.run();
+    }
+
+    private CLIApp buildApp() {
         JSONConverter converter = new JSONConverterImpl();
         IODevice fileIO = new FileIO();
 
@@ -16,7 +21,9 @@ public class CLIAppFacade {
         CLIRequestFactory requestFactory = new CLIRequestFactoryImpl(dataSource);
 
         CLIApp app = new CLIApp(consoleIO, requestFactory);
-        app.run();
+
+        return app;
     }
+
 
 }
