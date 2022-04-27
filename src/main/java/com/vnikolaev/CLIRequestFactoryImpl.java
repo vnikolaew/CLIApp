@@ -1,11 +1,8 @@
 package com.vnikolaev;
 
-import com.vnikolaev.abstractions.CLIRequest;
-import com.vnikolaev.abstractions.CLIRequestFactory;
-import com.vnikolaev.abstractions.JSONDataSource;
+import com.vnikolaev.abstractions.*;
 import com.vnikolaev.commands.*;
-import com.vnikolaev.queries.PrintQuery;
-import com.vnikolaev.queries.SearchQuery;
+import com.vnikolaev.queries.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,7 +52,7 @@ public class CLIRequestFactoryImpl implements CLIRequestFactory {
                 return new ExitCommand();
             }
             if(requestType.equals(HelpCommand.class)) {
-                return new HelpCommand();
+                return new HelpCommand(new DefaultCommandDescriptionFormatter());
             }
 
             return (CLIRequest) requestType

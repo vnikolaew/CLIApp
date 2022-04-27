@@ -21,6 +21,10 @@ public class SearchQuery extends CLIQuery<String> {
         String searchKey = args[0];
 
         List<?> result = dataSource.searchElement(searchKey);
+        if(result == null) {
+            return QueryResult.failure("Cannot execute a search.", "");
+        }
+
         var resultString = result.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", "));
