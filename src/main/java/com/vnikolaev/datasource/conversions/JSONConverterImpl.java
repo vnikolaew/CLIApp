@@ -50,4 +50,15 @@ public class JSONConverterImpl implements JSONConverter {
             return JSONConversionResult.failure(e.getMessage());
         }
     }
+
+    @Override
+    public JSONConversionResult<String> listToString(List<?> listPayload) {
+        try {
+            String json = new JSONArray(listPayload).toString(3);
+            return JSONConversionResult.success(json);
+        } catch (JSONException e) {
+            return JSONConversionResult.failure(e.getMessage());
+
+        }
+    }
 }

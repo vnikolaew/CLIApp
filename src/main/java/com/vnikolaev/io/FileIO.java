@@ -1,11 +1,11 @@
 package com.vnikolaev.io;
 
-import com.vnikolaev.abstractions.IODevice;
+import com.vnikolaev.abstractions.FileIODevice;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class FileIO implements IODevice {
+public class FileIO implements FileIODevice {
 
     @Override
     public void write(String filePath, String content) throws IOException {
@@ -22,6 +22,6 @@ public class FileIO implements IODevice {
         byte[] data = stream.readAllBytes();
 
         stream.close();
-        return new String(data);
+        return new String(data, StandardCharsets.UTF_8);
     }
 }

@@ -1,5 +1,6 @@
 package com.vnikolaev.commands;
 import com.vnikolaev.abstractions.CLICommand;
+import com.vnikolaev.results.CommandResult;
 
 public class ExitCommand extends CLICommand {
 

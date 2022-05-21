@@ -1,6 +1,6 @@
 package com.vnikolaev.abstractions;
 
-import com.vnikolaev.commands.CommandResult;
+import com.vnikolaev.results.CommandResult;
 
 public abstract class CLICommand implements CLIRequest {
 
@@ -12,10 +12,15 @@ public abstract class CLICommand implements CLIRequest {
 
     @Override
     public CommandResult execute() {
-        return args.length == getRequiredArgumentsLength()
-                ? executeCore()
-                : CommandResult.failure("Invalid arguments.");
+        int argsReceived = args.length;
+        int argsExpected = getRequiredArgumentsLength();
+
+            return argsReceived == argsExpected
+                    ? executeCore()
+                    : CommandResult.failure("Invalid number of arguments. Got "
+                    + argsReceived + ", expected " + argsExpected + ".");
     }
 
     protected abstract CommandResult executeCore();
+    protected abstract int getRequiredArgumentsLength();
 }

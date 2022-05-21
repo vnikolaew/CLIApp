@@ -4,9 +4,8 @@ import com.vnikolaev.abstractions.*;
 import com.vnikolaev.commands.*;
 import com.vnikolaev.queries.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class CLIRequestFactoryImpl implements CLIRequestFactory {
 
@@ -27,6 +26,7 @@ public class CLIRequestFactoryImpl implements CLIRequestFactory {
         requestMap.put("delete", DeleteCommand.class);
         requestMap.put("exit", ExitCommand.class);
         requestMap.put("help", HelpCommand.class);
+        requestMap.put("move", MoveCommand.class);
         requestMap.put("validate", ValidateSchemaCommand.class);
     }
 
@@ -48,19 +48,32 @@ public class CLIRequestFactoryImpl implements CLIRequestFactory {
 
     private CLIRequest makeRequest(Class<?> requestType, String[] arguments) {
         try {
-            if(requestType.equals(ExitCommand.class)) {
-                return new ExitCommand();
-            }
-            if(requestType.equals(HelpCommand.class)) {
-                return new HelpCommand(new DefaultCommandDescriptionFormatter());
-            }
-
-            return (CLIRequest) requestType
-                            .getConstructors()[0]
-                            .newInstance(dataSource, arguments);
+            return resolveRequest(requestType, arguments);
         } catch (Exception e) {
             return new InvalidCommand();
         }
+    }
+
+    private CLIRequest resolveRequest(Class<?> requestType, String[] arguments)
+            throws InstantiationException,
+            IllegalAccessException,
+            InvocationTargetException {
+        if(requestType.equals(ExitCommand.class)
+                || requestType.equals(InvalidCommand.class)) {
+            return (CLIRequest) requestType.getConstructors()[0].newInstance();
+        }
+
+        if(requestType.equals(HelpCommand.class)) {
+            return new HelpCommand(new DefaultCommandDescriptionFormatter());
+        }
+
+        if(requestType.equals(ValidateSchemaCommand.class)) {
+            return new ValidateSchemaCommand(dataSource);
+        }
+
+        return (CLIRequest) requestType
+                        .getConstructors()[0]
+                        .newInstance(dataSource, arguments);
     }
 
     private String[] getRequestSegments(String requestString) {

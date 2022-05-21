@@ -9,7 +9,7 @@ import java.io.File;
 
 public class JSONDataSourceImpl implements JSONDataSource {
 
-    private final IODevice fileIO;
+    private final FileIODevice fileIO;
 
     private final JSONConverter jsonConverter;
 
@@ -24,7 +24,7 @@ public class JSONDataSourceImpl implements JSONDataSource {
     private static final String pathDelimiter = File.separator;
 
 
-    public JSONDataSourceImpl(IODevice fileIO, JSONConverter jsonConverter) {
+    public JSONDataSourceImpl(FileIODevice fileIO, JSONConverter jsonConverter) {
         this.state = new JSONDataSourceClosedFileState(this);
         this.fileIO = fileIO;
         this.jsonConverter = jsonConverter;
@@ -42,11 +42,7 @@ public class JSONDataSourceImpl implements JSONDataSource {
         return currentFile;
     }
 
-    public String getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public IODevice getFileIO() {
+    public FileIODevice getFileIO() {
         return fileIO;
     }
 

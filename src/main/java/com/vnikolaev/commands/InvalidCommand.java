@@ -1,6 +1,7 @@
 package com.vnikolaev.commands;
 
 import com.vnikolaev.abstractions.CLICommand;
+import com.vnikolaev.results.CommandResult;
 
 public class InvalidCommand extends CLICommand {
 
@@ -15,6 +16,6 @@ public class InvalidCommand extends CLICommand {
 
     @Override
     protected CommandResult executeCore() {
-        return CommandResult.failure("Invalid / unsupported command.");
+        return CommandResult.failure("Invalid / unsupported command. Type help to see all available commands.");
     }
 }

@@ -9,4 +9,5 @@ public interface JSONConverter {
     JSONConversionResult<Map<String, Object>> stringToMap(String jsonPayload);
     JSONConversionResult<Object> stringToObject(String jsonPayload);
     JSONConversionResult<List<?>> stringToList(String jsonPayload);
+    JSONConversionResult<String> listToString(List<?> listPayload);
 }

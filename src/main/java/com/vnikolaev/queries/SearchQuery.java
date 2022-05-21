@@ -2,7 +2,7 @@ package com.vnikolaev.queries;
 
 import com.vnikolaev.abstractions.CLIQuery;
 import com.vnikolaev.abstractions.JSONDataSource;
-import com.vnikolaev.commands.QueryResult;
+import com.vnikolaev.results.QueryResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,14 +22,14 @@ public class SearchQuery extends CLIQuery<String> {
 
         List<?> result = dataSource.searchElement(searchKey);
         if(result == null) {
-            return QueryResult.failure("Cannot execute a search.", "");
+            return QueryResult.failure("Could not execute a search.", null);
         }
 
-        var resultString = result.stream()
+         var resultString = result.stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", "));
 
-        return QueryResult.success(resultString, "Search result: ");
+        return QueryResult.success("[ " + resultString + " ]", "Search result: ");
     }
 
     @Override

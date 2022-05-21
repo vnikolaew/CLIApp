@@ -1,15 +1,16 @@
 package com.vnikolaev;
 
-import com.vnikolaev.abstractions.CLIRequest;
-import com.vnikolaev.abstractions.CLIRequestFactory;
-import com.vnikolaev.abstractions.IODevice;
-import com.vnikolaev.commands.*;
+import com.vnikolaev.abstractions.*;
+import com.vnikolaev.results.*;
+
 import java.io.IOException;
 
 public final class CLIApp {
 
     private final IODevice ioDevice;
     private final CLIRequestFactory requestFactory;
+
+    private static final String newLine = System.lineSeparator();
 
     public CLIApp(IODevice ioDevice, CLIRequestFactory factory) {
         this.ioDevice = ioDevice;
@@ -23,26 +24,33 @@ public final class CLIApp {
     }
 
     private void processRequest() {
-        String input = readInput();
+        String input = readUserInput();
 
         CLIRequest cliRequest = requestFactory.createRequest(input);
-        CommandResult result = cliRequest.execute();
+        RequestResult result = cliRequest.execute();
 
-        displayResult(result);
+        outputResult(result);
     }
 
-    private void displayResult(CommandResult result) {
+    private void outputResult(RequestResult result) {
         try {
-            ioDevice.write("", result.getResultMessage());
-            if(result instanceof QueryResult<?> && ((QueryResult<?>) result).getData() != null) {
-                ioDevice.write("", ((QueryResult<?>) result).getData().toString());
+            ioDevice.write(result.getResultMessage() + newLine);
+            if(result instanceof QueryResult<?>) {
+                Object data = ((QueryResult<?>) result).getData();
+
+                if(data != null) {
+                    ioDevice.write(((QueryResult<?>) result).getData() + newLine);
+                }
             }
         } catch (IOException ignored) { }
     }
 
-    private String readInput() {
+    private String readUserInput() {
+        final String promptSymbol = "> ";
+
         try {
-            return ioDevice.read("").trim();
+            ioDevice.write(promptSymbol);
+            return ioDevice.read().trim();
         } catch (IOException e) {
             return null;
         }

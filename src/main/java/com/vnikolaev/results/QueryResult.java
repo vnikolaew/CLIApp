@@ -1,6 +1,6 @@
-package com.vnikolaev.commands;
+package com.vnikolaev.results;
 
-public class QueryResult<T> extends CommandResult {
+public class QueryResult<T> extends RequestResult {
 
     private final T data;
 
@@ -16,7 +16,6 @@ public class QueryResult<T> extends CommandResult {
     public static <T> QueryResult<T> success(T data, String message) {
         return new QueryResult<>(message, true, data);
     }
-
 
     public static <T> QueryResult<T> failure(
             String message, T data) {

@@ -1,7 +1,7 @@
 package com.vnikolaev.datasource;
 
 import com.vnikolaev.FileNameConstants;
-import com.vnikolaev.abstractions.IODevice;
+import com.vnikolaev.abstractions.FileIODevice;
 import com.vnikolaev.abstractions.JSONConverter;
 import com.vnikolaev.datasource.conversions.JSONConverterImpl;
 import com.vnikolaev.datasource.states.JSONDataSourceClosedFileState;
@@ -32,7 +32,7 @@ class JSONDataSourceImplTest {
     @BeforeEach
     void setUp() {
         // Dependencies:
-        IODevice fileIO = new FileIOMock();
+        FileIODevice fileIO = new FileIOMock();
         jsonConverter = new JSONConverterImpl();
 
         jsonDataSource = new JSONDataSourceImpl(fileIO, jsonConverter);
@@ -73,7 +73,7 @@ class JSONDataSourceImplTest {
     public void dataSource_ShouldReturn_InvalidSchema_WhenSuchIsProvided() throws IOException {
         String invalidJsonData = "{\"something\": [\"name: \"Joe\"]}";
 
-        IODevice mock = mock(IODevice.class);
+        FileIODevice mock = mock(FileIODevice.class);
 
         jsonDataSource = new JSONDataSourceImpl(mock, jsonConverter);
         jsonDataSource.setCurrentFile(new File(""));
@@ -453,7 +453,7 @@ class JSONDataSourceImplTest {
         assertEquals(jsonDataSource.getState().getClass(), JSONDataSourceClosedFileState.class);
     }
 
-    private class FileIOMock implements IODevice {
+    private class FileIOMock implements FileIODevice {
         public static final String jsonData = """
                     {
                    "phone_numbers": [

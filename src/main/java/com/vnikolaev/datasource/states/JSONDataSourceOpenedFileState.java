@@ -1,9 +1,8 @@
 package com.vnikolaev.datasource.states;
 
-import com.vnikolaev.abstractions.IODevice;
+import com.vnikolaev.abstractions.FileIODevice;
 import com.vnikolaev.abstractions.JSONConverter;
-import com.vnikolaev.datasource.DataSourceOperationResult;
-import com.vnikolaev.datasource.JSONDataSourceImpl;
+import com.vnikolaev.datasource.*;
 import com.vnikolaev.datasource.conversions.JSONConversionResult;
 
 import java.io.IOException;
@@ -45,24 +44,20 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
     @Override
     public DataSourceOperationResult saveAs(String location) {
+
+        JSONConversionResult<String> result =
+                dataSource.getJsonConverter().mapToString(jsonMapData);
+
+        if(!result.isSuccessful()) {
+            return DataSourceOperationResult
+                    .failure(List.of("Error: " + result.error()));
+        }
+
         try {
-            JSONConversionResult<String> result =
-                    dataSource.getJsonConverter().mapToString(jsonMapData);
-
-            if(!result.isSuccessful()) {
-                    return DataSourceOperationResult
-                            .failure(List.of("Error: " + result.error()));
-            }
-
             dataSource.getFileIO().write(location, result.data());
-
-            dataSource.setCurrentState(
-                    new JSONDataSourceClosedFileState(dataSource));
-
             return DataSourceOperationResult
                     .success("Successfully saved " + location);
         } catch (IOException e) {
-
             return DataSourceOperationResult
                     .failure(List.of("Error trying to open a file: " + e.getMessage()));
         }
@@ -91,8 +86,8 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
         if(isAList(current)) {
             List<Object> list = (List<Object>) current;
-            Integer index = tryParseInt(lastSegment);
 
+            Integer index = tryParseInt(lastSegment);
             if(index == null || isOutOfBounds(index, list)) {
                 return DataSourceOperationResult.failure(List.of("Invalid path"));
             }
@@ -137,8 +132,8 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
         if(isAList(current)) {
             List<Object> list = (List<Object>) current;
-            Integer index = tryParseInt(lastSegment);
 
+            Integer index = tryParseInt(lastSegment);
             if(index == null || index != list.size()) {
                 return DataSourceOperationResult.failure(List.of("Invalid path"));
             }
@@ -173,8 +168,8 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
         if(isAList(current)) {
             List<Object> list = (List<Object>) current;
-            Integer index = tryParseInt(lastSegment);
 
+            Integer index = tryParseInt(lastSegment);
             if(index == null || isOutOfBounds(index, list)) {
                 return DataSourceOperationResult.failure(List.of("Index is out of bounds."));
             }
@@ -196,7 +191,38 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
     @Override
     public DataSourceOperationResult moveElements(String fromPath, String toPath) {
-        return null;
+        String[] fromSegments = getPathSegments(fromPath);
+        String[] toSegments = getPathSegments(toPath);
+
+        if(!elementExists(fromSegments)) {
+            return DataSourceOperationResult
+                    .failure(List.of("Specified source element(s) do / does not exist."));
+        }
+
+        deleteElement(fromPath);
+
+        Object toPathParentElement = traverseJsonObjectAndCreateElementsIfAbsent
+                (Arrays.copyOf(toSegments, toSegments.length - 1), jsonMapData);
+        String lastToPathSegment = toSegments[toSegments.length - 1];
+
+        Object sourceElement = traverseJsonObject(fromSegments, jsonMapData);
+        if(isAMap(toPathParentElement)) {
+            Map<String, Object> map = (Map<String, Object>) toPathParentElement;
+            map.put(lastToPathSegment, sourceElement);
+
+            return DataSourceOperationResult
+                    .success("Successfully moved elements.");
+        }
+        if(isAList(toPathParentElement)) {
+            List<Object> list = (List<Object>) toPathParentElement;
+            list.add(sourceElement);
+
+            return DataSourceOperationResult
+                    .success("Successfully moved elements.");
+        }
+
+        return DataSourceOperationResult
+                .failure(List.of("Could not move the specified elements."));
     }
 
     @Override
@@ -217,7 +243,7 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
     @Override
     public DataSourceOperationResult validateSchema() {
         try {
-            IODevice ioDevice = dataSource.getFileIO();
+            FileIODevice ioDevice = dataSource.getFileIO();
             JSONConverter converter = dataSource.getJsonConverter();
 
             String json = ioDevice.read(dataSource.getCurrentFile().getPath());
@@ -256,11 +282,13 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
 
     private String normalizeString(String key) {
         String newKey = removeWhiteSpaces(key);
-        return newKey.startsWith("/") ? newKey.substring(1) : newKey;
+        return newKey.startsWith("/")
+                ? newKey.substring(1)
+                : newKey;
     }
 
     private String removeWhiteSpaces(String key) {
-        return key.trim().replaceAll(" ", "");
+        return key.replaceAll(" ", "");
     }
 
     private String[] getPathSegments(String path) {
@@ -319,7 +347,7 @@ public class JSONDataSourceOpenedFileState implements JSONDataSourceState {
                 Integer index = tryParseInt(segment);
 
                 if (index == null || index != list.size()) {
-                    return DataSourceOperationResult.failure(List.of("Invalid path"));
+                    return null;
                 }
 
                 list.add(new HashMap<>());

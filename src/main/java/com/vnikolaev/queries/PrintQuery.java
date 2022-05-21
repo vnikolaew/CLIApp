@@ -2,7 +2,10 @@ package com.vnikolaev.queries;
 
 import com.vnikolaev.abstractions.CLIQuery;
 import com.vnikolaev.abstractions.JSONDataSource;
-import com.vnikolaev.commands.QueryResult;
+import com.vnikolaev.results.QueryResult;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class PrintQuery extends CLIQuery<String> {
 

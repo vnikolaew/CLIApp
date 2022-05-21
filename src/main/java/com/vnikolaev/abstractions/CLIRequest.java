@@ -1,8 +1,7 @@
 package com.vnikolaev.abstractions;
 
-import com.vnikolaev.commands.CommandResult;
+import com.vnikolaev.results.RequestResult;
 
 public interface CLIRequest {
-    CommandResult execute();
-    int getRequiredArgumentsLength();
+    RequestResult execute();
 }

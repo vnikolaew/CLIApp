@@ -3,6 +3,7 @@ package com.vnikolaev.commands;
 import com.vnikolaev.abstractions.CLICommand;
 import com.vnikolaev.datasource.DataSourceOperationResult;
 import com.vnikolaev.abstractions.JSONDataSource;
+import com.vnikolaev.results.CommandResult;
 
 public class OpenCommand extends CLICommand {
 

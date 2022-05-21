@@ -1,6 +1,6 @@
 package com.vnikolaev.abstractions;
 
-import com.vnikolaev.commands.QueryResult;
+import com.vnikolaev.results.QueryResult;
 
 public abstract class CLIQuery<T> implements CLIRequest {
 
@@ -11,10 +11,15 @@ public abstract class CLIQuery<T> implements CLIRequest {
     }
 
     public QueryResult<T> execute() {
-        return args.length == getRequiredArgumentsLength()
+        int argsReceived = args.length;
+        int argsExpected = getRequiredArgumentsLength();
+
+        return argsReceived == argsExpected
                 ? executeCore()
-                : QueryResult.failure("Invalid arguments.", null);
+                : QueryResult.failure("Invalid number of arguments. Got "
+                + argsReceived + ", expected " + argsExpected + ".", null);
     }
 
     protected abstract QueryResult<T> executeCore();
+    protected abstract int getRequiredArgumentsLength();
 }

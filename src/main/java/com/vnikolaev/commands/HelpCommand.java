@@ -3,6 +3,7 @@ package com.vnikolaev.commands;
 import com.vnikolaev.abstractions.CLIQuery;
 import com.vnikolaev.abstractions.CommandDescriptionFormatter;
 import com.vnikolaev.requestdescriptors.*;
+import com.vnikolaev.results.QueryResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +43,12 @@ public class HelpCommand extends CLIQuery<String> {
     @Override
     protected QueryResult<String> executeCore() {
         StringBuilder info = new StringBuilder();
-        info.append("The following commands are supported: \n");
+        info.append("The following commands are currently supported: ");
 
         for(RequestDescriptor descriptor : descriptors) {
             info.append(formatter.formatLine(descriptor));
         }
 
-        return QueryResult.success(info.toString(), "");
+        return QueryResult.success(info.toString(), "\n");
     }
 }
